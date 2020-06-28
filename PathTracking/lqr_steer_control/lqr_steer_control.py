@@ -5,15 +5,18 @@ Path tracking simulation with LQR steering control and PID speed control.
 author Atsushi Sakai (@Atsushi_twi)
 
 """
-
+import scipy.linalg as la
+import matplotlib.pyplot as plt
+import math
+import numpy as np
 import sys
 sys.path.append("../../PathPlanning/CubicSpline/")
 
-import numpy as np
-import math
-import matplotlib.pyplot as plt
-import scipy.linalg as la
-import cubic_spline_planner
+try:
+    import cubic_spline_planner
+except:
+    raise
+
 
 Kp = 1.0  # speed proportional gain
 
@@ -24,7 +27,7 @@ R = np.eye(1)
 # parameters
 dt = 0.1  # time tick[s]
 L = 0.5  # Wheel base of the vehicle [m]
-max_steer = math.radians(45.0)  # maximum steering angle[rad]
+max_steer = np.deg2rad(45.0)  # maximum steering angle[rad]
 
 show_animation = True
 #  show_animation = False
@@ -61,7 +64,7 @@ def PIDControl(target, current):
 
 
 def pi_2_pi(angle):
-    return (angle + math.pi) % (2*math.pi) - math.pi
+    return (angle + math.pi) % (2 * math.pi) - math.pi
 
 
 def solve_DARE(A, B, Q, R):
@@ -73,10 +76,9 @@ def solve_DARE(A, B, Q, R):
     eps = 0.01
 
     for i in range(maxiter):
-        Xn = A.T * X * A - A.T * X * B * \
-            la.inv(R + B.T * X * B) * B.T * X * A + Q
+        Xn = A.T @ X @ A - A.T @ X @ B @ \
+            la.inv(R + B.T @ X @ B) @ B.T @ X @ A + Q
         if (abs(Xn - X)).max() < eps:
-            X = Xn
             break
         X = Xn
 
@@ -94,9 +96,9 @@ def dlqr(A, B, Q, R):
     X = solve_DARE(A, B, Q, R)
 
     # compute the LQR gain
-    K = np.matrix(la.inv(B.T * X * B + R) * (B.T * X * A))
+    K = la.inv(B.T @ X @ B + R) @ (B.T @ X @ A)
 
-    eigVals, eigVecs = la.eig(A - B * K)
+    eigVals, eigVecs = la.eig(A - B @ K)
 
     return K, X, eigVals
 
@@ -108,7 +110,7 @@ def lqr_steering_control(state, cx, cy, cyaw, ck, pe, pth_e):
     v = state.v
     th_e = pi_2_pi(state.yaw - cyaw[ind])
 
-    A = np.matrix(np.zeros((4, 4)))
+    A = np.zeros((4, 4))
     A[0, 0] = 1.0
     A[0, 1] = dt
     A[1, 2] = v
@@ -116,12 +118,12 @@ def lqr_steering_control(state, cx, cy, cyaw, ck, pe, pth_e):
     A[2, 3] = dt
     # print(A)
 
-    B = np.matrix(np.zeros((4, 1)))
+    B = np.zeros((4, 1))
     B[3, 0] = v / L
 
     K, _, _ = dlqr(A, B, Q, R)
 
-    x = np.matrix(np.zeros((4, 1)))
+    x = np.zeros((4, 1))
 
     x[0, 0] = e
     x[1, 0] = (e - pe) / dt
@@ -129,7 +131,7 @@ def lqr_steering_control(state, cx, cy, cyaw, ck, pe, pth_e):
     x[3, 0] = (th_e - pth_e) / dt
 
     ff = math.atan2(L * k, 1)
-    fb = pi_2_pi((-K * x)[0, 0])
+    fb = pi_2_pi((-K @ x)[0, 0])
 
     delta = ff + fb
 
@@ -171,7 +173,6 @@ def closed_loop_prediction(cx, cy, cyaw, ck, speed_profile, goal):
     yaw = [state.yaw]
     v = [state.v]
     t = [0.0]
-    target_ind = calc_nearest_index(state, cx, cy, cyaw)
 
     e, e_th = 0.0, 0.0
 
@@ -190,7 +191,7 @@ def closed_loop_prediction(cx, cy, cyaw, ck, speed_profile, goal):
         # check goal
         dx = state.x - goal[0]
         dy = state.y - goal[1]
-        if math.sqrt(dx ** 2 + dy ** 2) <= goal_dis:
+        if math.hypot(dx, dy) <= goal_dis:
             print("Goal")
             break
 
@@ -202,13 +203,16 @@ def closed_loop_prediction(cx, cy, cyaw, ck, speed_profile, goal):
 
         if target_ind % 1 == 0 and show_animation:
             plt.cla()
+            # for stopping simulation with the esc key.
+            plt.gcf().canvas.mpl_connect('key_release_event',
+                    lambda event: [exit(0) if event.key == 'escape' else None])
             plt.plot(cx, cy, "-r", label="course")
             plt.plot(x, y, "ob", label="trajectory")
             plt.plot(cx[target_ind], cy[target_ind], "xg", label="target")
             plt.axis("equal")
             plt.grid(True)
-            plt.title("speed[km/h]:" + str(round(state.v * 3.6, 2)) +
-                      ",target index:" + str(target_ind))
+            plt.title("speed[km/h]:" + str(round(state.v * 3.6, 2))
+                      + ",target index:" + str(target_ind))
             plt.pause(0.0001)
 
     return t, x, y, yaw, v
@@ -237,10 +241,6 @@ def calc_speed_profile(cx, cy, cyaw, target_speed):
 
     speed_profile[-1] = 0.0
 
-    #  flg, ax = plt.subplots(1)
-    #  plt.plot(speed_profile, "-r")
-    #  plt.show()
-
     return speed_profile
 
 
@@ -258,9 +258,9 @@ def main():
 
     t, x, y, yaw, v = closed_loop_prediction(cx, cy, cyaw, ck, sp, goal)
 
-    if show_animation:
+    if show_animation:  # pragma: no cover
         plt.close()
-        flg, _ = plt.subplots(1)
+        plt.subplots(1)
         plt.plot(ax, ay, "xb", label="input")
         plt.plot(cx, cy, "-r", label="spline")
         plt.plot(x, y, "-g", label="tracking")
@@ -270,14 +270,14 @@ def main():
         plt.ylabel("y[m]")
         plt.legend()
 
-        flg, ax = plt.subplots(1)
-        plt.plot(s, [math.degrees(iyaw) for iyaw in cyaw], "-r", label="yaw")
+        plt.subplots(1)
+        plt.plot(s, [np.rad2deg(iyaw) for iyaw in cyaw], "-r", label="yaw")
         plt.grid(True)
         plt.legend()
         plt.xlabel("line length[m]")
         plt.ylabel("yaw angle[deg]")
 
-        flg, ax = plt.subplots(1)
+        plt.subplots(1)
         plt.plot(s, ck, "-r", label="curvature")
         plt.grid(True)
         plt.legend()

@@ -1,9 +1,13 @@
 *.csv
+*.gif
+*.g2o
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+_build/
+.idea/
 
 # C extensions
 *.so
@@ -64,3 +68,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+matplotrecorder/*
+.vscode/settings.json

@@ -140,8 +140,7 @@ class Spline2D:
     def __calc_s(self, x, y):
         dx = np.diff(x)
         dy = np.diff(y)
-        self.ds = [math.sqrt(idx ** 2 + idy ** 2)
-                   for (idx, idy) in zip(dx, dy)]
+        self.ds = np.hypot(dx, dy)
         s = [0]
         s.extend(np.cumsum(self.ds))
         return s
@@ -209,7 +208,7 @@ def main():
         ryaw.append(sp.calc_yaw(i_s))
         rk.append(sp.calc_curvature(i_s))
 
-    flg, ax = plt.subplots(1)
+    plt.subplots(1)
     plt.plot(x, y, "xb", label="input")
     plt.plot(rx, ry, "-r", label="spline")
     plt.grid(True)
@@ -218,14 +217,14 @@ def main():
     plt.ylabel("y[m]")
     plt.legend()
 
-    flg, ax = plt.subplots(1)
-    plt.plot(s, [math.degrees(iyaw) for iyaw in ryaw], "-r", label="yaw")
+    plt.subplots(1)
+    plt.plot(s, [np.rad2deg(iyaw) for iyaw in ryaw], "-r", label="yaw")
     plt.grid(True)
     plt.legend()
     plt.xlabel("line length[m]")
     plt.ylabel("yaw angle[deg]")
 
-    flg, ax = plt.subplots(1)
+    plt.subplots(1)
     plt.plot(s, rk, "-r", label="curvature")
     plt.grid(True)
     plt.legend()
