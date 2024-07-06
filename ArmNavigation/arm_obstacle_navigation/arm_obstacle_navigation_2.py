@@ -34,7 +34,7 @@ def main():
     goal = (58, 56)
     grid = get_occupancy_grid(arm, obstacles)
     route = astar_torus(grid, start, goal)
-    if len(route) >= 0:
+    if route:
         animate(grid, arm, route)
 
 
@@ -136,7 +136,7 @@ def astar_torus(grid, start_node, goal_node):
 
     Args:
         grid: An occupancy grid (ndarray)
-        start_node: Initial joint configuation (tuple)
+        start_node: Initial joint configuration (tuple)
         goal_node: Goal joint configuration (tuple)
 
     Returns:

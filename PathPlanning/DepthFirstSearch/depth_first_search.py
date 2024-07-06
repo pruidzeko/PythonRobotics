@@ -33,16 +33,16 @@ class DepthFirstSearchPlanner:
         self.motion = self.get_motion_model()
 
     class Node:
-        def __init__(self, x, y, cost, pind, parent):
+        def __init__(self, x, y, cost, parent_index, parent):
             self.x = x  # index of grid
             self.y = y  # index of grid
             self.cost = cost
-            self.pind = pind
+            self.parent_index = parent_index
             self.parent = parent
 
         def __str__(self):
             return str(self.x) + "," + str(self.y) + "," + str(
-                self.cost) + "," + str(self.pind)
+                self.cost) + "," + str(self.parent_index)
 
     def planning(self, sx, sy, gx, gy):
         """
@@ -67,7 +67,7 @@ class DepthFirstSearchPlanner:
         open_set, closed_set = dict(), dict()
         open_set[self.calc_grid_index(nstart)] = nstart
 
-        while 1:
+        while True:
             if len(open_set) == 0:
                 print("Open set is empty..")
                 break
@@ -88,7 +88,7 @@ class DepthFirstSearchPlanner:
 
             if current.x == ngoal.x and current.y == ngoal.y:
                 print("Find goal")
-                ngoal.pind = current.pind
+                ngoal.parent_index = current.parent_index
                 ngoal.cost = current.cost
                 break
 

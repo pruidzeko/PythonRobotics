@@ -67,7 +67,7 @@ class BestFirstSearchPlanner:
         open_set, closed_set = dict(), dict()
         open_set[self.calc_grid_index(nstart)] = nstart
 
-        while 1:
+        while True:
             if len(open_set) == 0:
                 print("Open set is empty..")
                 break
@@ -132,7 +132,7 @@ class BestFirstSearchPlanner:
         # generate final course
         rx, ry = [self.calc_grid_position(ngoal.x, self.minx)], [
             self.calc_grid_position(ngoal.y, self.miny)]
-        n = closedset[ngoal.parent_index]
+        n = closedset[ngoal.pind]
         while n is not None:
             rx.append(self.calc_grid_position(n.x, self.minx))
             ry.append(self.calc_grid_position(n.y, self.miny))

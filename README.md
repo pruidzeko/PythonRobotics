@@ -3,13 +3,9 @@
 # PythonRobotics
 ![GitHub_Action_Linux_CI](https://github.com/AtsushiSakai/PythonRobotics/workflows/Linux_CI/badge.svg)
 ![GitHub_Action_MacOS_CI](https://github.com/AtsushiSakai/PythonRobotics/workflows/MacOS_CI/badge.svg)
-[![Build Status](https://travis-ci.org/AtsushiSakai/PythonRobotics.svg?branch=master)](https://travis-ci.org/AtsushiSakai/PythonRobotics)
-[![Documentation Status](https://readthedocs.org/projects/pythonrobotics/badge/?version=latest)](https://pythonrobotics.readthedocs.io/en/latest/?badge=latest)
+![GitHub_Action_Windows_CI](https://github.com/AtsushiSakai/PythonRobotics/workflows/Windows_CI/badge.svg)
 [![Build status](https://ci.appveyor.com/api/projects/status/sb279kxuv1be391g?svg=true)](https://ci.appveyor.com/project/AtsushiSakai/pythonrobotics)
-[![Coverage Status](https://coveralls.io/repos/github/AtsushiSakai/PythonRobotics/badge.svg?branch=master)](https://coveralls.io/github/AtsushiSakai/PythonRobotics?branch=master)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/AtsushiSakai/PythonRobotics.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/AtsushiSakai/PythonRobotics/context:python)
-[![CodeFactor](https://www.codefactor.io/repository/github/atsushisakai/pythonrobotics/badge/master)](https://www.codefactor.io/repository/github/atsushisakai/pythonrobotics/overview/master)
-[![tokei](https://tokei.rs/b1/github/AtsushiSakai/PythonRobotics)](https://github.com/AtsushiSakai/PythonRobotics)
+[![codecov](https://codecov.io/gh/AtsushiSakai/PythonRobotics/branch/master/graph/badge.svg)](https://codecov.io/gh/AtsushiSakai/PythonRobotics)
 
 Python codes for robotics algorithm.
 
@@ -37,6 +33,8 @@ Python codes for robotics algorithm.
       * [Grid based search](#grid-based-search)
          * [Dijkstra algorithm](#dijkstra-algorithm)
          * [A* algorithm](#a-algorithm)
+         * [D* algorithm](#d-algorithm)
+         * [D* Lite algorithm](#d-lite-algorithm)
          * [Potential Field algorithm](#potential-field-algorithm)
          * [Grid based coverage path planning](#grid-based-coverage-path-planning)
       * [State Lattice Planning](#state-lattice-planning)
@@ -71,11 +69,14 @@ Python codes for robotics algorithm.
    * [Contribution](#contribution)
    * [Citing](#citing)
    * [Support](#support)
+   * [Sponsors](#sponsors)
+      * [JetBrains](#JetBrains)
+      * [1Password](#1password)
    * [Authors](#authors)
 
 # What is this?
 
-This is a Python code collection of robotics algorithms, especially for autonomous navigation.
+This is a Python code collection of robotics algorithms.
 
 Features:
 
@@ -92,17 +93,29 @@ See this paper for more details:
 
 # Requirements
 
-- Python 3.8.x
+For running each sample code:
 
-- numpy
+- [Python 3.12.x](https://www.python.org/)
+ 
+- [NumPy](https://numpy.org/)
+ 
+- [SciPy](https://scipy.org/)
+ 
+- [Matplotlib](https://matplotlib.org/)
+ 
+- [cvxpy](https://www.cvxpy.org/) 
 
-- scipy
-
-- matplotlib
-
-- pandas
-
-- [cvxpy](https://www.cvxpy.org/index.html) 
+For development:
+  
+- [pytest](https://pytest.org/) (for unit tests)
+  
+- [pytest-xdist](https://pypi.org/project/pytest-xdist/) (for parallel unit tests)
+  
+- [mypy](http://mypy-lang.org/) (for type check)
+  
+- [sphinx](https://www.sphinx-doc.org/) (for document generation)
+  
+- [pycodestyle](https://pypi.org/project/pycodestyle/) (for code style check)
 
 # Documentation
 
@@ -110,7 +123,7 @@ This README only shows some examples of this project.
 
 If you are interested in other examples or mathematical backgrounds of each algorithm, 
 
-You can check the full documentation online: [https://pythonrobotics.readthedocs.io/](https://pythonrobotics.readthedocs.io/)
+You can check the full documentation online: [Welcome to PythonRobotics’s documentation\! — PythonRobotics documentation](https://atsushisakai.github.io/PythonRobotics/index.html)
 
 All animation gifs are stored here: [AtsushiSakai/PythonRoboticsGifs: Animation gifs of PythonRobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs)
 
@@ -118,12 +131,24 @@ All animation gifs are stored here: [AtsushiSakai/PythonRoboticsGifs: Animation 
 
 1. Clone this repo.
 
-> git clone https://github.com/AtsushiSakai/PythonRobotics.git
+   ```terminal
+   git clone https://github.com/AtsushiSakai/PythonRobotics.git
+   ```
 
 
-2. Install the required libraries. You can use environment.yml with conda command.
+2. Install the required libraries.
 
-> conda env create -f environment.yml
+- using conda :
+
+  ```terminal
+  conda env create -f requirements/environment.yml
+  ```
+ 
+- using pip :
+
+  ```terminal
+  pip install -r requirements/requirements.txt
+  ```
 
 
 3. Execute python script in each directory.
@@ -136,7 +161,9 @@ All animation gifs are stored here: [AtsushiSakai/PythonRoboticsGifs: Animation 
 
 <img src="https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/Localization/extended_kalman_filter/animation.gif" width="640" alt="EKF pic">
 
-Documentation: [Notebook](https://github.com/AtsushiSakai/PythonRobotics/blob/master/Localization/extended_kalman_filter/extended_kalman_filter_localization.ipynb)
+Ref:
+
+- [documentation](https://atsushisakai.github.io/PythonRobotics/modules/localization/extended_kalman_filter_localization_files/extended_kalman_filter_localization.html)
 
 ## Particle filter localization
 
@@ -146,11 +173,11 @@ This is a sensor fusion localization with Particle Filter(PF).
 
 The blue line is true trajectory, the black line is dead reckoning trajectory,
 
-and the red line is estimated trajectory with PF.
+and the red line is an estimated trajectory with PF.
 
 It is assumed that the robot can measure a distance from landmarks (RFID).
 
-This measurements are used for PF localization.
+These measurements are used for PF localization.
 
 Ref:
 
@@ -195,7 +222,7 @@ This is a 2D ray casting grid mapping example.
 
 This example shows how to convert a 2D range measurement to a grid map.
 
-![2](Mapping/lidar_to_grid_map/animation.gif)
+![2](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/Mapping/lidar_to_grid_map/animation.gif)
 
 ## k-means object clustering
 
@@ -218,7 +245,7 @@ Simultaneous Localization and Mapping(SLAM) examples
 
 This is a 2D ICP matching example with singular value decomposition.
 
-It can calculate a rotation matrix and a translation vector between points to points.
+It can calculate a rotation matrix, and a translation vector between points and points.
 
 ![3](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/SLAM/iterative_closest_point/animation.gif)
 
@@ -263,7 +290,7 @@ This is a 2D navigation sample code with Dynamic Window Approach.
 
 ### Dijkstra algorithm
 
-This is a 2D grid based shortest path planning with Dijkstra's algorithm.
+This is a 2D grid based the shortest path planning with Dijkstra's algorithm.
 
 ![PythonRobotics/figure_1.png at master · AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/Dijkstra/animation.gif)
 
@@ -271,13 +298,38 @@ In the animation, cyan points are searched nodes.
 
 ### A\* algorithm
 
-This is a 2D grid based shortest path planning with A star algorithm.
+This is a 2D grid based the shortest path planning with A star algorithm.
 
 ![PythonRobotics/figure_1.png at master · AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/AStar/animation.gif)
 
 In the animation, cyan points are searched nodes.
 
 Its heuristic is 2D Euclid distance.
+
+### D\* algorithm
+
+This is a 2D grid based the shortest path planning with D star algorithm.
+
+![figure at master · nirnayroy/intelligentrobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/DStar/animation.gif)
+
+The animation shows a robot finding its path avoiding an obstacle using the D* search algorithm.
+
+Ref:
+
+- [D* Algorithm Wikipedia](https://en.wikipedia.org/wiki/D*)
+
+### D\* Lite algorithm
+
+This algorithm finds the shortest path between two points while rerouting when obstacles are discovered. It has been implemented here for a 2D grid.
+
+![D* Lite](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/DStarLite/animation.gif)
+
+The animation shows a robot finding its path and rerouting to avoid obstacles as they are discovered using the D* Lite search algorithm.
+
+Refs:
+
+- [D* Lite](http://idm-lab.org/bib/abstracts/papers/aaai02b.pd)
+- [Improved Fast Replanning for Robot Navigation in Unknown Terrain](http://www.cs.cmu.edu/~maxim/files/dlite_icra02.pdf)
 
 ### Potential Field algorithm
 
@@ -355,7 +407,7 @@ Ref:
 
 ### RRT\* with reeds-shepp path
 
-![Robotics/animation.gif at master · AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/RRTStarReedsShepp/animation.gif))
+![Robotics/animation.gif at master · AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/RRTStarReedsShepp/animation.gif)
 
 Path planning for a car robot with RRT\* and reeds shepp path planner.
 
@@ -365,7 +417,7 @@ This is a path planning simulation with LQR-RRT\*.
 
 A double integrator motion model is used for LQR local planner.
 
-![LQRRRT](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/LQRRRTStar/animation.gif)
+![LQR_RRT](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/LQRRRTStar/animation.gif)
 
 Ref:
 
@@ -380,7 +432,7 @@ Motion planning with quintic polynomials.
 
 ![2](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/PathPlanning/QuinticPolynomialsPlanner/animation.gif)
 
-It can calculate 2D path, velocity, and acceleration profile based on quintic polynomials.
+It can calculate a 2D path, velocity, and acceleration profile based on quintic polynomials.
 
 Ref:
 
@@ -416,7 +468,7 @@ This is optimal trajectory generation in a Frenet Frame.
 
 The cyan line is the target course and black crosses are obstacles.
 
-The red line is predicted path.
+The red line is the predicted path.
 
 Ref:
 
@@ -482,7 +534,7 @@ Path tracking simulation with iterative linear model predictive speed and steeri
 
 Ref:
 
-- [notebook](https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/model_predictive_speed_and_steer_control/Model_predictive_speed_and_steering_control.ipynb)
+- [documentation](https://atsushisakai.github.io/PythonRobotics/modules/path_tracking/model_predictive_speed_and_steering_control/model_predictive_speed_and_steering_control.html)
 
 - [Real\-time Model Predictive Control \(MPC\), ACADO, Python \| Work\-is\-Playing](http://grauonline.de/wordpress/?page_id=3244)
 
@@ -494,7 +546,7 @@ A motion planning and path tracking simulation with NMPC of C-GMRES
 
 Ref:
 
-- [notebook](https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/cgmres_nmpc/cgmres_nmpc.ipynb)
+- [documentation](https://atsushisakai.github.io/PythonRobotics/modules/path_tracking/cgmres_nmpc/cgmres_nmpc.html)
 
 
 # Arm Navigation
@@ -503,9 +555,9 @@ Ref:
 
 N joint arm to a point control simulation.
 
-This is a interactive simulation.
+This is an interactive simulation.
 
-You can set the goal position of the end effector with left-click on the ploting area. 
+You can set the goal position of the end effector with left-click on the plotting area. 
 
 ![3](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/ArmNavigation/n_joint_arm_to_point_control/animation.gif)
 
@@ -534,15 +586,15 @@ This is a 3d trajectory generation simulation for a rocket powered landing.
 
 Ref:
 
-- [notebook](https://github.com/AtsushiSakai/PythonRobotics/blob/master/AerialNavigation/rocket_powered_landing/rocket_powered_landing.ipynb)
+- [documentation](https://atsushisakai.github.io/PythonRobotics/modules/aerial_navigation/rocket_powered_landing/rocket_powered_landing.html)
 
 # Bipedal
 
 ## bipedal planner with inverted pendulum
 
-This is a bipedal planner for modifying footsteps with inverted pendulum.
+This is a bipedal planner for modifying footsteps for an inverted pendulum.
 
-You can set the footsteps and the planner will modify those automatically.
+You can set the footsteps, and the planner will modify those automatically.
 
 ![3](https://github.com/AtsushiSakai/PythonRoboticsGifs/raw/master/Bipedal/bipedal_planner/animation.gif)
 
@@ -556,13 +608,13 @@ If this project helps your robotics project, please let me know with creating an
 
 Your robot's video, which is using PythonRobotics, is very welcome!!
 
-This is a list of other user's comment and references:[users\_comments](https://github.com/AtsushiSakai/PythonRobotics/blob/master/users_comments.md)
+This is a list of user's comment and references:[users\_comments](https://github.com/AtsushiSakai/PythonRobotics/blob/master/users_comments.md)
 
 # Contribution
 
-Any contribution is welcome!!
+Any contribution is welcome!! 
 
-If your PR is merged multiple times, I will add your account to the author list.
+Please check this document:[How To Contribute — PythonRobotics documentation](https://atsushisakai.github.io/PythonRobotics/how_to_contribute.html)
 
 # Citing
 
@@ -570,7 +622,7 @@ If you use this project's code for your academic work, we encourage you to cite 
 
 If you use this project's code in industry, we'd love to hear from you as well; feel free to reach out to the developers directly.
 
-# Support
+# <a id="support"></a>Supporting this project
 
 If you or your company would like to support this project, please consider:
 
@@ -580,26 +632,20 @@ If you or your company would like to support this project, please consider:
 
 - [One-time donation via PayPal](https://www.paypal.me/myenigmapay/)
 
+If you would like to support us in some other way, please contact with creating an issue.
+
+## <a id="sponsors"></a>Sponsors
+
+### <a id="JetBrains"></a>[JetBrains](https://www.jetbrains.com/)
+
+They are providing a free license of their IDEs for this OSS development.   
+
+### [1Password](https://github.com/1Password/1password-teams-open-source)
+
+They are providing a free license of their 1Password team license for this OSS project.   
+
+
 # Authors
 
-- [Atsushi Sakai](https://github.com/AtsushiSakai/)
-
-- [Daniel Ingram](https://github.com/daniel-s-ingram)
-
-- [Joe Dinius](https://github.com/jwdinius)
-
-- [Karan Chawla](https://github.com/karanchawla)
-
-- [Antonin RAFFIN](https://github.com/araffin)
-
-- [Alexis Paques](https://github.com/AlexisTM)
-
-- [Ryohei Sasaki](https://github.com/rsasaki0109)
-
-- [Göktuğ Karakaşlı](https://github.com/goktug97)
-
-- [Guillaume Jacquenot](https://github.com/Gjacquenot)
-
-- [Erwin Lejeune](https://github.com/guilyx)
-
+- [Contributors to AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics/graphs/contributors)
 

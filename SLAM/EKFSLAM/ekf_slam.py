@@ -8,6 +8,7 @@ import math
 
 import matplotlib.pyplot as plt
 import numpy as np
+from utils.angle import angle_mod
 
 # EKF state covariance
 Cx = np.diag([0.5, 0.5, np.deg2rad(30.0)]) ** 2
@@ -28,10 +29,9 @@ show_animation = True
 
 def ekf_slam(xEst, PEst, u, z):
     # Predict
-    S = STATE_SIZE
-    G, Fx = jacob_motion(xEst[0:S], u)
-    xEst[0:S] = motion_model(xEst[0:S], u)
-    PEst[0:S, 0:S] = G.T @ PEst[0:S, 0:S] @ G + Fx.T @ Cx @ Fx
+    G, Fx = jacob_motion(xEst, u)
+    xEst[0:STATE_SIZE] = motion_model(xEst[0:STATE_SIZE], u)
+    PEst = G.T @ PEst @ G + Fx.T @ Cx @ Fx
     initP = np.eye(2)
 
     # Update
@@ -115,11 +115,11 @@ def jacob_motion(x, u):
     Fx = np.hstack((np.eye(STATE_SIZE), np.zeros(
         (STATE_SIZE, LM_SIZE * calc_n_lm(x)))))
 
-    jF = np.array([[0.0, 0.0, -DT * u[0] * math.sin(x[2, 0])],
-                   [0.0, 0.0, DT * u[0] * math.cos(x[2, 0])],
-                   [0.0, 0.0, 0.0]])
+    jF = np.array([[0.0, 0.0, -DT * u[0, 0] * math.sin(x[2, 0])],
+                   [0.0, 0.0, DT * u[0, 0] * math.cos(x[2, 0])],
+                   [0.0, 0.0, 0.0]], dtype=float)
 
-    G = np.eye(STATE_SIZE) + Fx.T @ jF @ Fx
+    G = np.eye(len(x)) + Fx.T @ jF @ Fx
 
     return G, Fx,
 
@@ -192,7 +192,7 @@ def jacob_h(q, delta, x, i):
 
 
 def pi_2_pi(angle):
-    return (angle + math.pi) % (2 * math.pi) - math.pi
+    return angle_mod(angle)
 
 
 def main():
@@ -236,8 +236,9 @@ def main():
         if show_animation:  # pragma: no cover
             plt.cla()
             # for stopping simulation with the esc key.
-            plt.gcf().canvas.mpl_connect('key_release_event',
-                    lambda event: [exit(0) if event.key == 'escape' else None])
+            plt.gcf().canvas.mpl_connect(
+                'key_release_event',
+                lambda event: [exit(0) if event.key == 'escape' else None])
 
             plt.plot(RFID[:, 0], RFID[:, 1], "*k")
             plt.plot(xEst[0], xEst[1], ".r")
